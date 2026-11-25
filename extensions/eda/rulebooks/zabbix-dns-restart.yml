@@ -1,0 +1,20 @@
+---
+- name: Restart Windows DNS when Zabbix reports it down
+  hosts: all
+  sources:
+    # In AAP the activation maps an EDA event stream over this source;
+    # Zabbix posts its alerts to that event stream.
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
+  rules:
+    - name: Windows DNS down - restart it
+      condition: >-
+        event.payload.event_name is defined and
+        event.payload.event_value is defined and
+        event.payload.event_name is search("DNS", ignorecase=true) and
+        event.payload.event_value == 1
+      action:
+        run_job_template:
+          name: "Webinar - Restart Windows DNS"
+          organization: "Default"
