@@ -1,0 +1,11 @@
+---
+# Starts the Windows DNS Server service again if it has stopped or failed.
+# state: started is idempotent: a running service is left alone.
+- name: Restart the DNS Server service on Windows
+  hosts: "{{ dns_target | default('dns_servers') }}"
+  gather_facts: false
+  tasks:
+    - name: Ensure the DNS Server service is running
+      ansible.windows.win_service:
+        name: DNS
+        state: started
